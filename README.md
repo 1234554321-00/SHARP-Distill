@@ -34,7 +34,7 @@ We believe the simplified deployment architecture, minimal inference resource re
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
-### Official Review of Submission8126 by Reviewer zAKq:
+### Official Review of Submission8126 by Reviewer 8pQM:
 
 **Questions For Authors:**
 
@@ -78,12 +78,12 @@ These figures demonstrate an exceptional ROI, particularly in production environ
 ----------------------------------------------------------------------------------------
 
 
-### Official Review of Submission8126 by Reviewer 8pQM:
+### Official Review of Submission8126 by Reviewer zAKq:
 
 **Other Strengths and Weaknesses**
 Weaknesses:
 
-**1)**
+**Weakness 1)**
 
 We thank the reviewer for this detailed observation and the pointer to related contrastive distillation works. While SHARP-Distill shares broad goals with [4–6], we respectfully clarify key distinctions in motivation, architecture, and technical contributions:
 
@@ -108,24 +108,24 @@ D. **Joint fusion beyond simple concatenation:**
 
 We hope these clarifications help better position SHARP-Distill’s contributions relative to prior work, and we welcome suggestions to make these distinctions clearer in the final version.
 
-**2)**
+**Weakness 2)**
 
 We agree and will move the DeBERTa details from the Preliminaries to the appendix to improve focus and clarity in the main text.
 
-**3) On Target Task and Equation (8) – Implicit vs. Rating Prediction**
+**Weakness 3) On Target Task and Equation (8) – Implicit vs. Rating Prediction**
 
 We thank the reviewer for pointing this out. The target task is **implicit feedback recommendation**, where user–item interactions are binary (e.g., click/no-click, purchase/no-purchase). Equation (8) applies a **pointwise MSE loss** over these binary labels to model interaction likelihood—this is a common approach in top-K recommendation models such as NeuMF [He et al., 2017] and LightGCN [He et al., 2020].
 
 We acknowledge that Eq. (8) was mistakenly labeled as BPR in an earlier draft; this has been corrected. All evaluation metrics (P@10, R@10, NDCG@10, HR@10) are consistent with implicit feedback settings and focus on top-K ranking. We will ensure that the **notation, task framing, and loss function descriptions** are aligned and clearly presented in the final version. We appreciate the reviewer’s attention to this point.
 
-**4) On Equation (8) and Loss Function Clarification**
+**Weaknessv 4) On Equation (8) and Loss Function Clarification**
 
 We thank the reviewer for pointing this out. We confirm that Equation (8) implements a **pointwise MSE loss** over binary labels (0/1), which aligns with our target task of **implicit feedback recommendation**. This design follows prior work such as NeuMF [He et al., 2017] and DeepCF [Deng et al., 2019], where MSE is commonly used for modeling interaction likelihood in implicit settings.
 
 The earlier reference to BPR was a **notation error**, not a conceptual one. We fully acknowledge that BPR is a pairwise ranking loss, while MSE is a pointwise loss. In our case, MSE was chosen intentionally for its stability on binary feedback and its compatibility with downstream ranking metrics (P@10, NDCG@10, HR@10). We have corrected the label and revised the description to ensure consistency between the loss function and task formulation. We appreciate the reviewer’s close reading and attention to this detail.
 
 
-**5) On Formula and Notation Inconsistencies**
+**Weakness 5) On Formula and Notation Inconsistencies**
 
 We thank the reviewer for carefully identifying these issues. We address each point below and will correct all inconsistencies in the revised version:
 
