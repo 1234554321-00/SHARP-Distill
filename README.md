@@ -81,13 +81,12 @@ These figures demonstrate an exceptional ROI, particularly in production environ
 ### Official Review of Submission8126 by Reviewer zAKq:
 
 **Other Strengths and Weaknesses**
-Weaknesses:
 
 **Weakness 1)**
 
 We thank the reviewer for this detailed observation and the pointer to related contrastive distillation works. While SHARP-Distill shares broad goals with [4–6], we respectfully clarify key distinctions in motivation, architecture, and technical contributions:
 
-A. **Cross-modal distillation from a multimodal teacher:**  
+A. **Cross-modal distillation from a multi-Modal teacher:**  
    Unlike [4] and [5], which focus on distillation within homogeneous language models (e.g., BERT → RoBERTa), and [6], which uses standard GNNs, SHARP-Distill transfers knowledge from a multimodal teacher (HGNN + DeBERTa) to a compact student (single-layer GCN). This combination of **hypergraph reasoning and textual semantics** for distillation has not been previously studied to our knowledge.
 
 B. **Hypergraph-aware contrastive distillation:**  
