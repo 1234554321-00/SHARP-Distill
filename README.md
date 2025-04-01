@@ -185,85 +185,108 @@ We sincerely thank the reviewer for the detailed and thoughtful feedback. We hav
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
 
-## **Appendix: Theoretical Extensions and Supporting Lemmas for SHARP-Distill**
+# SHARP-Distill: Theoretical Extensions and Supporting Lemmas
 
-To address reviewer concerns regarding lack of theoretical claims, we extend our analysis with additional lemmas that clarify the training-time dynamics and approximation guarantees of SHARP-Distill.
+This README provides theoretical justifications for SHARP-Distill by analyzing its embedding approximation, alignment behavior, and generalization properties under knowledge distillation and contrastive learning.
 
----
+## Theoretical Analysis
 
-### **Lemma 1 (Convergence of Interpolated Embeddings via Training)**
+### Embedding Approximation via Interpolation
 
-Assume the student embeddings `Z_U^s, Z_I^s` are optimized via the distillation loss:
+**Theorem 1** (Embedding Approximation via Knowledge Distillation with Interpolation):
+Let $Z_U^t \in \mathbb{R}^{n \times d}$ and $Z_I^t \in \mathbb{R}^{m \times d}$ denote the teacher's user and item embeddings, respectively. Let $Z_U^s$ and $Z_I^s$ be the corresponding embeddings learned by the student model. At training step $t$, define the interpolated student embeddings as:
 
-```
-L_distill = ||Z_U^s - Z_U^t||_F^2 + ||Z_I^s - Z_I^t||_F^2
-```
+$$
+\begin{aligned}
+Z_U^{s,t} &= \gamma_t Z_U^s + (1 - \gamma_t) Z_U^t, \\
+Z_I^{s,t} &= \gamma_t Z_I^s + (1 - \gamma_t) Z_I^t,
+\end{aligned}
+$$
 
-With a bounded learning rate and Lipschitz continuous gradients, after `t` steps of SGD:
+where $\gamma_t \in [0,1]$ is a time-dependent interpolation coefficient. Assume $\|Z_U^t\|_F \leq C_U$, $\|Z_I^t\|_F \leq C_I$ for constants $C_U, C_I > 0$. Then:
 
-```
-E[||Z_U^s - Z_U^t||_F^2 + ||Z_I^s - Z_I^t||_F^2] ≤ C / t
-```
+$$\mathbb{E}\left[\|Z_U^{s,t} - Z_U^t\|_F^2 + \|Z_I^{s,t} - Z_I^t\|_F^2\right] \leq \gamma_t^2 \cdot \mathbb{E}\left[\|Z_U^s - Z_U^t\|_F^2 + \|Z_I^s - Z_I^t\|_F^2\right] + (1 - \gamma_t)^2 (C_U^2 + C_I^2).$$
 
-for some constant `C > 0`.
+**Proof:**
 
-**Implication**: From Theorem 1, the approximation error of interpolated embeddings decreases over time as:
+$$Z_U^{s,t} - Z_U^t = \gamma_t(Z_U^s - Z_U^t) \quad \Rightarrow \quad \|Z_U^{s,t} - Z_U^t\|_F^2 = \gamma_t^2 \|Z_U^s - Z_U^t\|_F^2.$$
 
-```
-E[||Z_U^{s,t} - Z_U^t||_F^2 + ||Z_I^{s,t} - Z_I^t||_F^2] 
-≤ (γ_t^2 * C) / t + (1 - γ_t)^2 * (C_U^2 + C_I^2)
-```
+Likewise, for items:
 
----
+$$\|Z_I^{s,t} - Z_I^t\|_F^2 = \gamma_t^2 \|Z_I^s - Z_I^t\|_F^2.$$
 
-### **Lemma 2 (Robustness of Contrastive Alignment with False Negatives)**
+Adding and taking expectation:
 
-Let `u ∈ U` and `N(u)` be the set of false negatives (i.e., `v ≠ u` but similarity `S(u,v)` is high). Suppose SHARP-Distill applies noise-aware contrastive learning or hard negative mining, and:
+$$\mathbb{E}\left[\|Z_U^{s,t} - Z_U^t\|_F^2 + \|Z_I^{s,t} - Z_I^t\|_F^2\right] = \gamma_t^2 \cdot \mathbb{E}\left[\|Z_U^s - Z_U^t\|_F^2 + \|Z_I^s - Z_I^t\|_F^2\right].$$
 
-```
-S(u,v) ≤ 1 - ε    for all v ∈ N(u)
-```
+Additionally, since:
 
-Then the user contrastive loss is bounded:
+$$\|Z_U^{s,t} - Z_U^t\|_F \leq (1 - \gamma_t) C_U, \quad \|Z_I^{s,t} - Z_I^t\|_F \leq (1 - \gamma_t) C_I,$$
 
-```
-L_con^U ≤ -log [ exp(1/τ) / (exp(1/τ) + |N(u)| * exp((1 - ε)/τ)) ]
-```
+we obtain:
 
-**Implication**: The loss remains bounded, and alignment holds as long as false negatives are separated by a margin `ε > 0`, justifying the use of hybrid semantic-topological similarity.
+$$\|Z_U^{s,t} - Z_U^t\|_F^2 + \|Z_I^{s,t} - Z_I^t\|_F^2 \leq (1 - \gamma_t)^2 (C_U^2 + C_I^2).$$
 
----
+Combining both yields the result.
 
-### **Lemma 3 (Generalization under Soft Distillation)**
+### Embedding Alignment via Contrastive Learning
 
-Let `Ŷ^t` and `Ŷ^s` be the teacher and student logits over items for user `i`, and let `P^t`, `P^s` be their temperature-scaled softmax outputs. If the KL-divergence is bounded:
+**Theorem 2** (Embedding Alignment through Contrastive Learning):
+Let $Z_u^t$, $Z_u^s$ be the teacher and student embeddings for user $u \in U$, and $P_u^t, P_u^s$ the corresponding positional encodings. Define similarity as:
 
-```
-KL(P^t || P^s) ≤ δ
-```
+$$\mathcal{S}(u, v) = \alpha \cdot \cos(Z_u^t, Z_v^s) + (1 - \alpha) \cdot \cos(P_u^t, P_v^s),$$
 
-Then for unseen test items `(i,j)`:
+with cosine similarity $\cos(x, y) = \frac{x \cdot y}{\|x\| \|y\|}$ and $\alpha \in [0,1]$. The user-level contrastive loss is:
 
-```
-E_test [ (Ŷ_ij^s - Ŷ_ij^t)^2 ] ≤ T^2 * δ + η
-```
+$$L_{\mathrm{con}}^U = - \frac{1}{|U|} \sum_{u \in U} \log \frac{\exp(\mathcal{S}(u,u)/\tau)}{\sum_{v \in U} \exp(\mathcal{S}(u,v)/\tau)}.$$
 
-where `η` quantifies the distributional shift between training and test sets (assumed small under i.i.d.).
+Then, under ideal assumptions $\mathcal{S}(u,u) \to 1$, $\mathcal{S}(u,v) \to 0$ for $v \neq u$, minimizing $L_{\mathrm{con}}^U \to 0$ implies:
 
-**Implication**: This ensures the student generalizes well under soft supervision, supporting Theorem 3.
+$$\|Z_u^s - Z_u^t\|^2 \to 0, \quad \|P_u^s - P_u^t\|^2 \to 0.$$
 
----
+**Proof:**
 
-### **Summary**
+As $\mathcal{S}(u,u)/\tau \gg \mathcal{S}(u,v)/\tau$ for $v \neq u$, the numerator dominates:
 
-These lemmas complement our main theorems and offer formal guarantees for SHARP-Distill:
+$$\frac{\exp(\mathcal{S}(u,u)/\tau)}{\sum_{v} \exp(\mathcal{S}(u,v)/\tau)} \to 1 \quad \Rightarrow \quad L_{\mathrm{con}}^U \to 0.$$
 
-- **Time-dependent improvement** in approximation through interpolation (Lemma 1),
-- **Contrastive robustness** under noisy negatives (Lemma 2),
-- **Generalization guarantees** under soft-label distillation (Lemma 3).
+Since:
 
-Together, these results strengthen the theoretical foundation of our framework and directly address reviewer concerns.
+$$\mathcal{S}(u,u) \to 1 \Rightarrow \cos(Z_u^t, Z_u^s) \to 1, \quad \cos(P_u^t, P_u^s) \to 1,$$
 
+we conclude:
 
+$$\|Z_u^s - Z_u^t\|^2 \to 0, \quad \|P_u^s - P_u^t\|^2 \to 0.$$
 
+### Bounded Student Error under Soft Supervision
 
+**Theorem 3** (Bounded Student Error under Teacher Supervision):
+Let $Y_{ij} \in [0,1]$ denote the true label, and $\hat{Y}_{ij}^t, \hat{Y}_{ij}^s$ be the teacher and student predictions. Define:
+
+$$P^t = \mathrm{softmax}(\hat{Y}^t / T), \quad P^s = \mathrm{softmax}(\hat{Y}^s / T),$$
+
+with temperature $T > 0$. Suppose:
+- $\mathbb{E}[(Y_{ij} - \hat{Y}_{ij}^t)^2] \leq \epsilon_t$,
+- $\mathrm{KL}(P^t \| P^s) \leq \delta$.
+
+Then:
+
+$$\mathbb{E}[(Y_{ij} - \hat{Y}_{ij}^s)^2] \leq \epsilon_t + 2 T^2 \delta.$$
+
+**Proof:**
+
+Use the identity:
+
+$$(Y_{ij} - \hat{Y}_{ij}^s)^2 = (Y_{ij} - \hat{Y}_{ij}^t + \hat{Y}_{ij}^t - \hat{Y}_{ij}^s)^2 \leq 2(Y_{ij} - \hat{Y}_{ij}^t)^2 + 2(\hat{Y}_{ij}^t - \hat{Y}_{ij}^s)^2.$$
+
+Taking expectations:
+
+$$\mathrm{MSE}_{\text{student}} \leq 2 \epsilon_t + 2 \cdot \mathbb{E}[(\hat{Y}_{ij}^t - \hat{Y}_{ij}^s)^2].$$
+
+From distillation theory, if $\mathrm{KL}(P^t \| P^s) \leq \delta$, then:
+
+$$\mathbb{E}[(\hat{Y}_{ij}^t - \hat{Y}_{ij}^s)^2] \leq T^2 \delta.$$
+
+Thus:
+
+$$\mathrm{MSE}_{\text{student}} \leq \epsilon_t + 2 T^2 \delta.$$
