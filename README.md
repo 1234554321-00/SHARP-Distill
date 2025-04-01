@@ -6,9 +6,9 @@
 
 While SHARP-Distill does not introduce new theoretical proofs, its design is grounded in established theoretical frameworks:
 
-- **Structure-preserving distillation**: Transfers teacher knowledge via probability distributions, building on the theoretical foundations established by Hinton et al. (2015)
-- **InfoNCE-based contrastive learning**: Aligns teacher-student representations using principles from mutual information maximization (Oord et al., 2018)
-- **Hypergraph spectral filtering**: Efficiently captures high-order relations through proven spectral convolution operations (Feng et al., 2019)
+- **Structure-preserving distillation**: Transfers teacher knowledge via probability distributions, building on the theoretical foundations established by [1].
+- **InfoNCE-based contrastive learning**: Aligns teacher-student representations using principles from mutual information maximization [2].
+- **Hypergraph spectral filtering**: Efficiently captures high-order relations through proven spectral convolution operations [3].
 
 We validate these theoretical foundations empirically using Centered Kernel Alignment (CKA) analysis, which quantitatively measures representation similarity between neural networks. Higher CKA scores indicate better alignment between the representation spaces:
 
@@ -25,6 +25,9 @@ The consistently high CKA scores (0.83-0.88) demonstrate that our student model 
 We believe the simplified deployment architecture, minimal inference resource requirements, and strong theoretical grounding supported by CKA analysis directly addresses the implementation and theoretical concerns raised. SHARP-Distill offers not just state-of-the-art performance, but a practical, deployment-ready solution that balances implementation complexity with significant performance gains. We respectfully request that the reviewer reconsider their assessment in light of this additional information.
 
 
+[1] Hinton G, Vinyals O, Dean J. Distilling the knowledge in a neural network. arXiv preprint arXiv:1503.02531. 2015 Mar 9.
+[2] Oord AV, Li Y, Vinyals O. Representation learning with contrastive predictive coding. arXiv preprint arXiv:1807.03748. 2018 Jul 10.
+[3] Feng Y, You H, Zhang Z, Ji R, Gao Y. Hypergraph neural networks. InProceedings of the AAAI conference on artificial intelligence 2019 Jul 17 (Vol. 33, No. 01, pp. 3558-3565).
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
