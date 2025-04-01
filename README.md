@@ -173,6 +173,8 @@ Figure 1 presents an ablation study comparing SHARP-Distill with and without pos
 
 ![CL_Pos](https://github.com/user-attachments/assets/2dd11ce8-8f8b-473d-9d8f-b28ddefb85fb)
 
+We sincerely thank the reviewer for the detailed and thoughtful feedback. We have carefully addressed the concerns regarding task formulation, formula clarity, related work, and novelty. In particular, we clarified the implicit feedback setting, corrected notational issues, added extended discussion on positional knowledge transfer (Eq. 16), and empirically compared against recent LLM-based methods. We believe these revisions strengthen both the technical clarity and the originality of our contribution. Given the substantial improvements and supporting evidence, we respectfully ask the reviewer to consider increasing their score.
+
 
 **2 - Figure 7)**
 
