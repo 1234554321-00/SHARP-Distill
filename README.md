@@ -34,9 +34,51 @@ We believe the simplified deployment architecture, minimal inference resource re
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
-
-
 ### Official Review of Submission8126 by Reviewer zAKq:
+
+**Questions For Authors:**
+
+**2. As discussed in Claims And Evidence section, what's the training and inference cost of the teacher model? what's the ROI considering the cost of teacher and student as a whole compared with other models?**
+
+Thank you for raising this important question about deployment viability. To properly evaluate ROI (Return on Investment) in recommendation systems, we need a metric that balances one-time training costs against recurring inference costs. We introduce the Deployment Cost Index (DCI) as a practical quantification of this trade-off, capturing both the initial investment (training) and operational efficiency (inference speed). We address this from both inference and training perspectives.
+
+**Inference Efficiency:**  
+As shown below, SHARP-Distill achieves **up to 68× faster inference than HGNN** and **40× faster than LightGCN** on large-scale datasets (e.g., Amazon CDs, Yelp), making it highly suitable for real-time recommendation systems in Table4.
+
+| **Table 4: Dataset**   | **LightGCN (ms)** | **HGNN (ms)** | **SHARP-Distill (ms)** | **× Faster (vs LG / HGNN)** |
+|---------------|-------------------|----------------|--------------------------|------------------------------|
+| Amazon CDs    | 395.45            | 668.23         | **9.77**                 | 40× / 68×                    |
+| Yelp          | 342.67            | 552.34         | **8.79**                 | 39× / 63×                    |
+
+> **Training Cost and ROI:**  
+> While SHARP-Distill requires offline pretraining of a teacher model (HGNN + DeBERTa), this cost is incurred **once** and amortized across repeated deployments. We therefore compute a **Deployment Cost Index (DCI)** to reflect the product of training time and per-query inference latency for the deployed model:
+>
+> > **DCI = Student Training Time (hrs) × Inference Time (ms)**  
+>
+> This assumes the teacher is pre-trained once and not used at inference. The table below shows that SHARP-Distill achieves the **lowest DCI**, making it highly efficient for real-world, inference-heavy settings in the Table 5.
+
+| **Table 5:  Dataset**   | **Model**         | **Train Time (hrs)** | **Inf Time (ms)** | **DCI ↓**  |
+|---------------|-------------------|-----------------------|--------------------|------------|
+| Amazon CDs    | LightGCN          | 2.0                   | 395.45             | 790.90     |
+|               | SHARP-Distill     | 4.2 (student only)    | **9.77**           | **41.03**  |
+| Yelp          | LightGCN          | 2.0                   | 342.67             | 685.34     |
+|               | SHARP-Distill     | 4.2 (student only)    | **8.79**           | **36.88**  |
+
+This assumes the teacher is pre-trained once and not used at inference. Our analysis shows that SHARP-Distill achieves the lowest DCI among comparable models, making it highly efficient for real-world, inference-heavy settings:
+
+For **Amazon CDs:** SHARP-Distill's DCI (41.03) is 19× lower than LightGCN's (790.90)
+
+For **Yelp:** SHARP-Distill's DCI (36.88) is 18× lower than LightGCN's (685.34)
+
+These figures demonstrate an exceptional ROI, particularly in production environments where inference speed directly impacts user experience, server costs, and system throughput. Even when accounting for the initial teacher training cost, SHARP-Distill becomes more cost-effective than baseline models after just a few thousand inference requests—a threshold typically crossed in minutes in commercial recommender systems. We respectfully suggest that our framework's demonstrated ability to effectively integrate heterogeneous knowledge sources without conflict, coupled with its substantial cost advantages in real-world deployment scenarios, addresses the reviewer's key concerns. We hope these additional analyses clarify SHARP-Distill's practical value and provide compelling evidence for reconsidering the initial score.
+
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+
+### Official Review of Submission8126 by Reviewer 8pQM:
 
 **Other Strengths and Weaknesses**
 Weaknesses:
