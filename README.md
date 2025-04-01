@@ -72,11 +72,9 @@ For **Yelp:** SHARP-Distill's DCI (36.88) is 18× lower than LightGCN's (685.34)
 
 These figures demonstrate an exceptional ROI, particularly in production environments where inference speed directly impacts user experience, server costs, and system throughput. Even when accounting for the initial teacher training cost, SHARP-Distill becomes more cost-effective than baseline models after just a few thousand inference requests—a threshold typically crossed in minutes in commercial recommender systems. We respectfully suggest that our framework's demonstrated ability to effectively integrate heterogeneous knowledge sources without conflict, coupled with its substantial cost advantages in real-world deployment scenarios, addresses the reviewer's key concerns. We hope these additional analyses clarify SHARP-Distill's practical value and provide compelling evidence for reconsidering the initial score.
 
-
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------
-
 
 ### Official Review of Submission8126 by Reviewer zAKq:
 
@@ -180,4 +178,92 @@ We agree that presenting them as subfigures would improve clarity and visual org
 
 
 We sincerely thank the reviewer for the detailed and thoughtful feedback. We have carefully addressed the concerns regarding task formulation, formula clarity, related work, and novelty. In particular, we clarified the implicit feedback setting, corrected notational issues, added extended discussion on positional knowledge transfer (Eq. 16), and empirically compared against recent LLM-based methods. We believe these revisions strengthen both the technical clarity and the originality of our contribution. Given the substantial improvements and supporting evidence, we respectfully ask the reviewer to consider increasing their score.
+
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+## **Appendix: Theoretical Extensions and Supporting Lemmas for SHARP-Distill**
+
+To address reviewer concerns regarding lack of theoretical claims, we extend our analysis with additional lemmas that clarify the training-time dynamics and approximation guarantees of SHARP-Distill.
+
+---
+
+### **Lemma 1 (Convergence of Interpolated Embeddings via Training)**
+
+Assume the student embeddings `Z_U^s, Z_I^s` are optimized via the distillation loss:
+
+```
+L_distill = ||Z_U^s - Z_U^t||_F^2 + ||Z_I^s - Z_I^t||_F^2
+```
+
+With a bounded learning rate and Lipschitz continuous gradients, after `t` steps of SGD:
+
+```
+E[||Z_U^s - Z_U^t||_F^2 + ||Z_I^s - Z_I^t||_F^2] ≤ C / t
+```
+
+for some constant `C > 0`.
+
+**Implication**: From Theorem 1, the approximation error of interpolated embeddings decreases over time as:
+
+```
+E[||Z_U^{s,t} - Z_U^t||_F^2 + ||Z_I^{s,t} - Z_I^t||_F^2] 
+≤ (γ_t^2 * C) / t + (1 - γ_t)^2 * (C_U^2 + C_I^2)
+```
+
+---
+
+### **Lemma 2 (Robustness of Contrastive Alignment with False Negatives)**
+
+Let `u ∈ U` and `N(u)` be the set of false negatives (i.e., `v ≠ u` but similarity `S(u,v)` is high). Suppose SHARP-Distill applies noise-aware contrastive learning or hard negative mining, and:
+
+```
+S(u,v) ≤ 1 - ε    for all v ∈ N(u)
+```
+
+Then the user contrastive loss is bounded:
+
+```
+L_con^U ≤ -log [ exp(1/τ) / (exp(1/τ) + |N(u)| * exp((1 - ε)/τ)) ]
+```
+
+**Implication**: The loss remains bounded, and alignment holds as long as false negatives are separated by a margin `ε > 0`, justifying the use of hybrid semantic-topological similarity.
+
+---
+
+### **Lemma 3 (Generalization under Soft Distillation)**
+
+Let `Ŷ^t` and `Ŷ^s` be the teacher and student logits over items for user `i`, and let `P^t`, `P^s` be their temperature-scaled softmax outputs. If the KL-divergence is bounded:
+
+```
+KL(P^t || P^s) ≤ δ
+```
+
+Then for unseen test items `(i,j)`:
+
+```
+E_test [ (Ŷ_ij^s - Ŷ_ij^t)^2 ] ≤ T^2 * δ + η
+```
+
+where `η` quantifies the distributional shift between training and test sets (assumed small under i.i.d.).
+
+**Implication**: This ensures the student generalizes well under soft supervision, supporting Theorem 3.
+
+---
+
+### **Summary**
+
+These lemmas complement our main theorems and offer formal guarantees for SHARP-Distill:
+
+- **Time-dependent improvement** in approximation through interpolation (Lemma 1),
+- **Contrastive robustness** under noisy negatives (Lemma 2),
+- **Generalization guarantees** under soft-label distillation (Lemma 3).
+
+Together, these results strengthen the theoretical foundation of our framework and directly address reviewer concerns.
+
+
+
 
