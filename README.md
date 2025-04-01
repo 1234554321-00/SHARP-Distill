@@ -1,5 +1,37 @@
 # SHARP-Distill
 
+### Official Review of Submission8126 by Reviewer scTP:
+
+**4. Lacks formal proofs or detailed justification**
+
+While SHARP-Distill does not introduce new theoretical proofs, its design is grounded in established theoretical frameworks:
+
+- **Structure-preserving distillation**: Transfers teacher knowledge via probability distributions, building on the theoretical foundations established by Hinton et al. (2015)
+- **InfoNCE-based contrastive learning**: Aligns teacher-student representations using principles from mutual information maximization (Oord et al., 2018)
+- **Hypergraph spectral filtering**: Efficiently captures high-order relations through proven spectral convolution operations (Feng et al., 2019)
+
+We validate these theoretical foundations empirically using Centered Kernel Alignment (CKA) analysis, which quantitatively measures representation similarity between neural networks. Higher CKA scores indicate better alignment between the representation spaces:
+
+**Table 2: CKA Between Teacher and Student**
+| Dataset       | HGNN Embedding | DeBERTa Embedding | SHARP-Distill (Student) |
+|---------------|----------------|-------------------|--------------------------|
+| Amazon-CDs    | 0.72           | 0.78              | **0.86**                 |
+| Yelp          | 0.69           | 0.74              | **0.84**                 |
+| Cellphones    | 0.75           | 0.80              | **0.88**                 |
+| Beauty        | 0.70           | 0.76              | **0.85**                 |
+| Sports        | 0.68           | 0.73              | **0.83**                 |
+
+The consistently high CKA scores (0.83-0.88) demonstrate that our student model effectively captures both structural and semantic knowledge from the teacher components. Notably, the student model achieves higher CKA scores than either individual teacher component, confirming that our distillation process successfully combines both knowledge sources. These empirical results align with theoretical expectations from knowledge distillation literature, where well-designed distillation approaches can create more coherent representations than their teachers through the regularization effect of the distillation process. 
+We believe the simplified deployment architecture, minimal inference resource requirements, and strong theoretical grounding supported by CKA analysis directly addresses the implementation and theoretical concerns raised. SHARP-Distill offers not just state-of-the-art performance, but a practical, deployment-ready solution that balances implementation complexity with significant performance gains. We respectfully request that the reviewer reconsider their assessment in light of this additional information.
+
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+
+### Official Review of Submission8126 by Reviewer zAKq:
+
 **Other Strengths and Weaknesses**
 Weaknesses:
 
